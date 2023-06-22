@@ -12,6 +12,7 @@ use std::{env, fmt, fs};
 
 use byte_unit::{Byte, ByteError};
 use clap::Parser;
+use index_scheduler::InstanceTogglableFeatures;
 use meilisearch_types::milli::update::IndexerConfig;
 use rustls::server::{
     AllowAnyAnonymousOrAuthenticatedClient, AllowAnyAuthenticatedClient, ServerSessionMemoryCache,
@@ -485,6 +486,10 @@ impl Opt {
         } else {
             Ok(None)
         }
+    }
+
+    pub(crate) fn to_instance_features(&self) -> InstanceTogglableFeatures {
+        InstanceTogglableFeatures { metrics: self.experimental_enable_metrics }
     }
 }
 
