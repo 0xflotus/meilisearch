@@ -151,7 +151,9 @@ pub async fn search_with_url_query(
     let mut aggregate = SearchAggregator::from_query(&query, &req);
 
     let index = index_scheduler.index(&index_uid)?;
-    let search_result = tokio::task::spawn_blocking(move || perform_search(&index, query)).await?;
+    let features = index_scheduler.features()?;
+    let search_result =
+        tokio::task::spawn_blocking(move || perform_search(&index, query, features)).await?;
     if let Ok(ref search_result) = search_result {
         aggregate.succeed(search_result);
     }
@@ -181,9 +183,11 @@ pub async fn search_with_post(
     }
 
     let mut aggregate = SearchAggregator::from_query(&query, &req);
+    let features = index_scheduler.features()?;
 
     let index = index_scheduler.index(&index_uid)?;
-    let search_result = tokio::task::spawn_blocking(move || perform_search(&index, query)).await?;
+    let search_result =
+        tokio::task::spawn_blocking(move || perform_search(&index, query, features)).await?;
     if let Ok(ref search_result) = search_result {
         aggregate.succeed(search_result);
     }
